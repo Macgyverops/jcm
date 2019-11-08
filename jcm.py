@@ -16,7 +16,7 @@ def cli():
 
 @cli.group('users')
 def users():
-  """Commands for users."""
+  """Commands for Users"""
 
 @users.command('list')
 #Pulls the user list and dumps it as json, it only pulls the results and not the total.
