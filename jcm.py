@@ -78,5 +78,3 @@ def init_config():
 if __name__ == '__main__':
   init_config()
   cli()
-  for user in userdump:
-    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email'))
