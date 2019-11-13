@@ -18,13 +18,16 @@ def cli():
 def users():
   """Commands for Users"""
 
-@users.command('listall')
+@users.command('list-all')
 #Pulls the user list and dumps it as json, it only pulls the results and not the total.
 def list_all_users():
-  user_data = requests.get('https://console.jumpcloud.com/api/systemusers', headers=headers)
-  user_dump = user_data.json()['results']
+  """List all users"""
+  user_data = run_request('https://console.jumpcloud.com/api/systemusers')
+  user_dump = user_data['results']
+  print("\nListing all users:\n")
   for user in user_dump:
     print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email'))
+  print("\n")
 
 @users.command('associations')
 def list_user_associations():
@@ -38,8 +41,9 @@ def systems():
 #Pulls the system list and dumps it as json, it only pulls the results and not the total.
 def list_all_systems():
   """Lists all systems"""
-  system_data = requests.get('https://console.jumpcloud.com/api/systems', headers=headers)
-  system_dump = system_data.json()['results']
+  system_data = run_request('https://console.jumpcloud.com/api/systems')
+  system_dump = system_data['results']
+  print("\nListing all systems:\n")
   for system in system_dump:
     print(system.get('displayName')+', '+system.get('id'))
 
@@ -48,21 +52,16 @@ def list_all_systems():
 def list_system_associations(system_id):
   """Lists known associations of a system. e.g. system groups and user groups"""
   requests_url='https://console.jumpcloud.com/api/v2/systems/'+system_id+'/usergroups'
-  try:
-    system_data = requests.get(requests_url,headers=headers,timeout=3)
-    system_data.raise_for_status()
-  except requests.exceptions.HTTPError as errh:
-    print ("Http Error:",errh); return
-  except requests.exceptions.ConnectionError as errc:
-    print ("Error Connecting:",errc); return
-  except requests.exceptions.Timeout as errt:
-    print ("Timeout Error:",errt);return
-  except requests.exceptions.RequestException as err:
-    print ("OOps: Something Else",err); return
-  system_dump = system_data.json()
-  print(system_id+' has been assigned the following user groups')
+  system_dump = run_request(requests_url)
+  print("\nThe supplied system_id "+system_id+' has been assigned the following user groups')
   for item in system_dump:
     print(item['compiledAttributes']['ldapGroups'][0]['name'])
+  print("\nThe supplied system_id "+system_id+' system is a member of the following system groups')
+  requests_url='https://console.jumpcloud.com/api/v2/systems/'+system_id+'/memberof'
+  memberof_dump = run_request(requests_url)
+  for members in memberof_dump:
+    print(get_system_group_name(members.get('id')))
+  print("\n")
 
 #Lets pull the config data
 def init_config():
@@ -73,6 +72,24 @@ def init_config():
   global headers
   headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'x-api-key': x_api_key }
 
+def get_system_group_name(system_group_id):
+    system_group_url = 'https://console.jumpcloud.com/api/v2/systemgroups/'+system_group_id
+    system_group = run_request(system_group_url)
+    return system_group.get('name')
+
+def run_request(re_url):
+  try:
+    re = requests.get(re_url,headers=headers,timeout=3)
+    re.raise_for_status()
+  except requests.exceptions.HTTPError as errh:
+    print ("Http Error:",errh); return
+  except requests.exceptions.ConnectionError as errc:
+    print ("Error Connecting:",errc); return
+  except requests.exceptions.Timeout as errt:
+    print ("Timeout Error:",errt);return
+  except requests.exceptions.RequestException as err:
+    print ("OOps: Something Else",err); return  
+  return re.json()
 
 #Main
 if __name__ == '__main__':
