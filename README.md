@@ -6,6 +6,7 @@ The jumpcloud manager is a command line tool that streamlines pulling data out o
 
 # config file
 \\[DEFAULT\\]
+
 x-api-key = your_api_key
 
 # Commands
