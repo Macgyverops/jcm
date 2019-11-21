@@ -26,12 +26,20 @@ def list_all_users():
   user_dump = user_data['results']
   print("\nListing all users:\n")
   for user in user_dump:
-    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email'))
+    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", user_id: "+user.get('id'))
   print("\n")
 
 @users.command('associations')
-def list_user_associations():
-  print('wip')
+@click.argument('user_id')
+def list_user_associations(user_id):
+  """Lists known associations of a user. e.g. user groups"""
+  user_info = get_user(user_id)
+  requests_url = 'https://console.jumpcloud.com/api/v2/users/'+user_id+'/memberof'
+  user_dump = run_request(requests_url)
+  print("\nThe supplied user \""+user_info.get('displayname')+'\" has been assigned the following user groups')
+  for item in user_dump:
+    print(item['compiledAttributes']['ldapGroups'][0]['name'])
+  print("\n")
 
 @cli.group('systems')
 def systems():
@@ -73,9 +81,14 @@ def init_config():
   headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'x-api-key': x_api_key }
 
 def get_system_group_name(system_group_id):
-    system_group_url = 'https://console.jumpcloud.com/api/v2/systemgroups/'+system_group_id
-    system_group = run_request(system_group_url)
-    return system_group.get('name')
+  system_group_url = 'https://console.jumpcloud.com/api/v2/systemgroups/'+system_group_id
+  system_group = run_request(system_group_url)
+  return system_group.get('name')
+
+def get_user(user_id):
+  user_url = 'https://console.jumpcloud.com/api/systemusers/'+user_id
+  user = run_request(user_url)
+  return user
 
 def run_request(re_url):
   try:
