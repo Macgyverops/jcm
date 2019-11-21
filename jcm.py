@@ -29,10 +29,21 @@ def list_all_users():
     print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", user_id: "+user.get('id'))
   print("\n")
 
+@users.command('info')
+@click.argument('user_id')
+def list_user(user_id):
+  """Displays user info (user_id)"""
+  user_info = get_user(user_id)
+  print("All information on the user "+user_info.get('firstname')+" "+user_info.get('lastname')+".\n")
+  for item,val in user_info.items():
+    print(json.dumps(item)+": "+json.dumps(val))
+  print("\n")
+
+
 @users.command('associations')
 @click.argument('user_id')
 def list_user_associations(user_id):
-  """Lists known associations of a user. e.g. user groups"""
+  """Lists user associations (user_id)"""
   user_info = get_user(user_id)
   requests_url = 'https://console.jumpcloud.com/api/v2/users/'+user_id+'/memberof'
   user_dump = run_request(requests_url)
