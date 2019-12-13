@@ -1,15 +1,15 @@
 # jcm
 JumpCloud Manager
 
+# Overview
+The jumpcloud manager is a command line tool that streamlines pulling data out of jumpcloud's administration page such as getting system data or user data.
 
-Usage: jcm.py [OPTIONS] COMMAND [ARGS]...
+# config file .jcm.ini
+\[DEFAULT\]<br/>x-api-key = your_api_key
 
-  JCM List Jumpcloud Objects
+# Commands
+## users
+In users you have the following options list-all, associations, info.
 
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  systems  Commands for Systems
-  users    Commands for Users
-
+## systems
+In systems you have the following options list-all, associations
