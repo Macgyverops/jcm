@@ -22,11 +22,11 @@ def users():
 #Pulls the user list and dumps it as json, it only pulls the results and not the total.
 def list_all_users():
   """List all users"""
-  user_data = run_request('https://console.jumpcloud.com/api/systemusers')
+  user_data = run_request('https://console.jumpcloud.com/api/systemusers?limit=0')
   user_dump = user_data['results']
   print("\nListing all users:\n")
   for user in user_dump:
-    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", user_id: "+user.get('id'))
+    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", username: "+user.get('username')+", user_id: "+user.get('id'))
   print("\n")
 
 @users.command('info')
