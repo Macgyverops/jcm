@@ -9,6 +9,9 @@ import requests
 import configparser
 import click
 import json
+import datetime
+from datetime import timedelta
+
 
 @click.group()
 def cli():
@@ -82,6 +85,22 @@ def list_system_associations(system_id):
     print(get_system_group_name(members.get('id')))
   print("\n")
 
+@cli.group('admin')
+def admin():
+  """Administrative Commands"""
+
+@admin.command('get-logs')
+def get_logs():
+  """Retrieves administrative events log from Jumpcloud, 24hrs by default"""
+  requests_url='https://events.jumpcloud.com/events'
+  # Need to add starttime and endtime to payload
+  endtime=datetime.datetime.utcnow().replace(microsecond=0).isoformat()
+  starttime=datetime.datetime.isoformat(datetime.datetime.utcnow().replace(microsecond=0) - timedelta(hours = 24))
+  payload = "startDate="+starttime+"Z&endDate="+endtime+"Z"
+  #payload="startDate=2020-01-16T19:57:14Z&endDate=2020-01-17T19:57:14Z"
+  logs_dump = run_request(requests_url,payload)
+  print(json.dumps(logs_dump,indent=4))
+
 #Lets pull the config data
 def init_config():
   config = configparser.ConfigParser()
@@ -90,6 +109,8 @@ def init_config():
   x_api_key = config['DEFAULT']['x-api-key']
   global headers
   headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'x-api-key': x_api_key }
+  global payload
+  payload = ''
 
 def get_system_group_name(system_group_id):
   system_group_url = 'https://console.jumpcloud.com/api/v2/systemgroups/'+system_group_id
@@ -101,9 +122,9 @@ def get_user(user_id):
   user = run_request(user_url)
   return user
 
-def run_request(re_url):
+def run_request(re_url,payload = ''):
   try:
-    re = requests.get(re_url,headers=headers,timeout=3)
+    re = requests.get(re_url,params=payload,headers=headers,timeout=3)
     re.raise_for_status()
   except requests.exceptions.HTTPError as errh:
     print ("Http Error:",errh); return
