@@ -11,26 +11,26 @@ The jumpcloud manager is a command line tool that streamlines pulling data out o
 ## users
 In users you have the following options list-all, associations, info.
 
-List all users
+List all users<br/>
 jcm users list-all
 
-List user associations
+List user associations<br/>
 jcm users associations <<user_id>>
 
-List user information
+List user information<br/>
 jcm users info <<user_id>>
 
 ## systems
 In systems you have the following options list-all, associations
 
-Lists all systems
+Lists all systems<br/>
 jcm systems list-all
 
-List associations of one system_id
+List associations of one system_id<br/>
 jcm systems associations <<system_id>>
 
 ## admin
 In admin you have the following option get-logs
 
-Returns last 24 hours of admin events in json format
+Returns last 24 hours of admin events in json format<br/>
 jcm admin get-logs 
