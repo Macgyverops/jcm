@@ -16,6 +16,7 @@ from datetime import timedelta
 @click.group()
 def cli():
   """JCM List Jumpcloud Objects"""
+  init_config()
 
 @cli.group('users')
 def users():
@@ -97,7 +98,6 @@ def get_logs():
   endtime=datetime.datetime.utcnow().replace(microsecond=0).isoformat()
   starttime=datetime.datetime.isoformat(datetime.datetime.utcnow().replace(microsecond=0) - timedelta(hours = 24))
   payload = "startDate="+starttime+"Z&endDate="+endtime+"Z"
-  #payload="startDate=2020-01-16T19:57:14Z&endDate=2020-01-17T19:57:14Z"
   logs_dump = run_request(requests_url,payload)
   print(json.dumps(logs_dump,indent=4))
 
@@ -138,5 +138,4 @@ def run_request(re_url,payload = ''):
 
 #Main
 if __name__ == '__main__':
-  init_config()
   cli()
