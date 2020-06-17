@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #Author Joshua Goldman
 #Date Created 11/6/2019
 #Purpose simple command line tool for jumpcloud management
@@ -43,6 +42,22 @@ def list_user(user_id):
     print(json.dumps(item)+": "+json.dumps(val))
   print("\n")
 
+@users.command('ssh-audit')
+def list_ssh_check():
+  """Displays If A Users SSH-Keys are populated """
+  user_data = run_request('https://console.jumpcloud.com/api/systemusers?limit=0')
+  user_dump = user_data['results']
+  print("\nListing all users:\n")
+  for user in user_dump:
+#    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", username: "+user.get('username')+", user_id: "+user.get('id')+", ssh-keys"+user.get('ssh-keys'))
+#     print(user.get('public-key'))
+    keys=user.get('ssh_keys')
+    if not keys:
+      keys='None'
+    else:
+      keys='Yes'
+    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", Has ssh keys?: "+keys)
+  print("\n")
 
 @users.command('associations')
 @click.argument('user_id')
@@ -64,11 +79,11 @@ def systems():
 #Pulls the system list and dumps it as json, it only pulls the results and not the total.
 def list_all_systems():
   """Lists all systems"""
-  system_data = run_request('https://console.jumpcloud.com/api/systems')
+  system_data = run_request('https://console.jumpcloud.com/api/systems?limit=0')
   system_dump = system_data['results']
   print("\nListing all systems:\n")
   for system in system_dump:
-    print(system.get('displayName')+', '+system.get('id'))
+    print(system.get('displayName')+', '+system.get('remoteIP')+', '+system.get('id'))
 
 @systems.command('associations')
 @click.argument('system_id')
@@ -99,6 +114,7 @@ def get_logs():
   starttime=datetime.datetime.isoformat(datetime.datetime.utcnow().replace(microsecond=0) - timedelta(hours = 24))
   payload = "startDate="+starttime+"Z&endDate="+endtime+"Z"
   logs_dump = run_request(requests_url,payload)
+  print(payload)
   print(json.dumps(logs_dump,indent=4))
 
 #Lets pull the config data
