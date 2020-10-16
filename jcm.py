@@ -29,7 +29,7 @@ def list_all_users():
   user_dump = user_data['results']
   print("\nListing all users:\n")
   for user in user_dump:
-    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", username: "+user.get('username')+", user_id: "+user.get('id'))
+    print('\"'+user.get('firstname')+" "+user.get('lastname')+'\", '+user.get('email')+", username: "+user.get('username')+", user_id: "+user.get('id')+", suspended: "+str(user.get('suspended')))
   print("\n")
 
 @users.command('info')
